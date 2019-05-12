@@ -1,0 +1,9 @@
+{
+	"pg": {
+		"user": "mprc_dev_user",
+		"host": "127.0.0.1",
+		"database": "mprc_dev",
+		"password": "1234",
+		"port": 5432
+	}
+}
