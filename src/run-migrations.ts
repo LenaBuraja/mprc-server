@@ -17,11 +17,11 @@ const migrations: { name: string, exec: (tx: Transaction) => Promise<void> }[] =
 			table.date(models.PERSON.BIRTHDAY);
 			table.string(models.PERSON.EMAIL);
 			table.string(models.PERSON.PHONE_NUMBER);
-			table.integer(models.PERSON.POSITION_ID).references(models.POSITION.ID).inTable(models.TABLE.POSITIONS);
+			table.integer(models.PERSON.POSITION).references(models.POSITION.ID).inTable(models.TABLE.POSITIONS);
 		});
 		await tx.schema.createTable(models.TABLE.EMPLOYEES, (table) => {
 			table.increments(models.EMPLOYEE.ID).primary();
-			table.integer(models.EMPLOYEE.PERSON_ID).references(models.PERSON.ID).inTable(models.TABLE.PEOPLE);
+			table.integer(models.EMPLOYEE.PERSON).references(models.PERSON.ID).inTable(models.TABLE.PEOPLE);
 			table.date(models.EMPLOYEE.EMPLOYMENT_DATE).notNullable();
 			table.integer(models.EMPLOYEE.WAGE).notNullable();
 		});
@@ -29,10 +29,10 @@ const migrations: { name: string, exec: (tx: Transaction) => Promise<void> }[] =
 			Promise.resolve().then(async () => await tx.schema.createTable(models.TABLE.CANDIDATES, (table) => {
 				table.increments(models.CANDIDATE.ID).primary();
 				table.integer(models.CANDIDATE.PERSON_ID).references(models.PERSON.ID).inTable(models.TABLE.PEOPLE);
-				table.integer(models.CANDIDATE.PERSONNEL_OFFICER_ID)
+				table.integer(models.CANDIDATE.PERSONNEL_OFFICER)
 					.references(models.EMPLOYEE.ID)
 					.inTable(models.TABLE.EMPLOYEES);
-				table.integer(models.CANDIDATE.INTERVIEWER_ID)
+				table.integer(models.CANDIDATE.INTERVIEWER)
 					.references(models.EMPLOYEE.ID)
 					.inTable(models.TABLE.EMPLOYEES);
 				table.timestamp(models.CANDIDATE.INTERVIEWED_AT);
@@ -45,8 +45,9 @@ const migrations: { name: string, exec: (tx: Transaction) => Promise<void> }[] =
 			})),
 			Promise.resolve().then(async () => await tx.schema.createTable(models.TABLE.USERS, (table) => {
 				table.increments(models.USER.ID).primary();
-				table.integer(models.USER.EMPLOYEE_ID).references(models.EMPLOYEE.ID).inTable(models.TABLE.EMPLOYEES);
-				table.text(models.USER.PASSWORD_HASH).notNullable();
+				table.integer(models.USER.EMPLOYEE).references(models.EMPLOYEE.ID).inTable(models.TABLE.EMPLOYEES);
+				table.text(models.USER.PASSWORD_HASH);
+				table.text(models.USER.PASSWORD_TOKEN);
 			})),
 		]);
 	}
@@ -61,16 +62,15 @@ const migrations: { name: string, exec: (tx: Transaction) => Promise<void> }[] =
 			[models.PERSON.FIRST_NAME]: 'Admin',
 			[models.PERSON.LAST_NAME]: 'Adminovich',
 			[models.PERSON.EMAIL]: 'admin@mycompany.com',
-			[models.PERSON.POSITION_ID]: positionId,
+			[models.PERSON.POSITION]: positionId,
 		} as models.Person).returning(models.PERSON.ID).then((res) => res[0]);
 		const employeeId: number = await tx(models.TABLE.EMPLOYEES).insert({
-			[models.EMPLOYEE.PERSON_ID]: personId,
+			[models.EMPLOYEE.PERSON]: personId,
 			[models.EMPLOYEE.EMPLOYMENT_DATE]: new Date(),
 			[models.EMPLOYEE.WAGE]: 800,
 		} as models.Employee).returning(models.EMPLOYEE.ID).then((res) => res[0]);
 		await tx(models.TABLE.USERS).insert({
-			[models.USER.EMPLOYEE_ID]: employeeId,
-			[models.USER.PASSWORD_HASH]: 'f23ec0bb4210edd5cba85afd05127efcd2fc6a781bfed49188da1081670b22d8',
+			[models.USER.EMPLOYEE]: employeeId,
 		} as models.User);
 	},
 }];
@@ -90,7 +90,7 @@ export default async function runMigrations() {
 				table.date(models.PERSON.BIRTHDAY);
 				table.string(models.PERSON.EMAIL);
 				table.string(models.PERSON.PHONE_NUMBER);
-				table.integer(models.PERSON.POSITION_ID).references(models.POSITION.ID).inTable(models.TABLE.POSITIONS);
+				table.integer(models.PERSON.POSITION).references(models.POSITION.ID).inTable(models.TABLE.POSITIONS);
 			})
 			await tx(models.TABLE.MIGRATIONS).insert({
 				[models.MIGRATION.NAME]: name,

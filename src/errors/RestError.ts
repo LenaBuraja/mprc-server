@@ -1,4 +1,4 @@
-import { REST_STATUS } from "./constants";
+import { REST_STATUS } from "../constants/rest.constants";
 
 export default class RestError extends Error {
 	static get NAME() { return 'RestError'; }

@@ -4,7 +4,7 @@ import { METHOD, REST_STATUS } from "../constants/rest.constants";
 import koaPassport = require("koa-passport");
 import { promisify } from "util";
 import { User } from "../models";
-import RestError from "../RestError";
+import RestError from "../errors/RestError";
 
 export = initRouter('/auth', [{
 	method: METHOD.POST,

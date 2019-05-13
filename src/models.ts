@@ -55,7 +55,7 @@ export enum PERSON {
 	BIRTHDAY = 'birthday',
 	EMAIL = 'email',
 	PHONE_NUMBER = 'phone_number',
-	POSITION_ID = 'position',
+	POSITION = 'position',
 }
 
 export type Person = { [key in PERSON]: {
@@ -66,19 +66,19 @@ export type Person = { [key in PERSON]: {
 	[PERSON.BIRTHDAY]: string | null;
 	[PERSON.EMAIL]: string | null;
 	[PERSON.PHONE_NUMBER]: string | null;
-	[PERSON.POSITION_ID]: number;
+	[PERSON.POSITION]: number;
 }[key] };
 
 export enum EMPLOYEE {
 	ID = 'id',
-	PERSON_ID = 'person',
+	PERSON = 'person',
 	EMPLOYMENT_DATE = 'employment_date',
 	WAGE = 'wage',
 }
 
 export type Employee = { [key in EMPLOYEE]: {
 	[EMPLOYEE.ID]: number;
-	[EMPLOYEE.PERSON_ID]: number;
+	[EMPLOYEE.PERSON]: number;
 	[EMPLOYEE.EMPLOYMENT_DATE]: Date;
 	[EMPLOYEE.WAGE]: number;
 }[key] }
@@ -86,8 +86,8 @@ export type Employee = { [key in EMPLOYEE]: {
 export enum CANDIDATE {
 	ID = 'id',
 	PERSON_ID = 'person',
-	PERSONNEL_OFFICER_ID = 'personnel_officer',
-	INTERVIEWER_ID = 'interviewer',
+	PERSONNEL_OFFICER = 'personnel_officer',
+	INTERVIEWER = 'interviewer',
 	INTERVIEWED_AT = 'interviewed_at',
 	STATUS = 'status',
 	WAGE = 'wage',
@@ -95,12 +95,14 @@ export enum CANDIDATE {
 
 export enum USER {
 	ID = 'id',
-	EMPLOYEE_ID = 'employee',
+	EMPLOYEE = 'employee',
 	PASSWORD_HASH = 'password_hash',
+	PASSWORD_TOKEN = 'password_token',
 }
 
 export type User = { [key in USER]: {
 	[USER.ID]: number;
-	[USER.EMPLOYEE_ID]: number;
-	[USER.PASSWORD_HASH]: string;
+	[USER.EMPLOYEE]: number;
+	[USER.PASSWORD_HASH]: string | null;
+	[USER.PASSWORD_TOKEN]: string | null;
 }[key] };

@@ -4,7 +4,7 @@ import session from "koa-session";
 import passport from "koa-passport";
 import { Strategy as LocalStrategy, VerifyFunction } from "passport-local";
 
-import { REST_STATUS } from "./constants";
+import { REST_STATUS } from "./constants/rest.constants";
 import { User, USER } from "./models";
 import { findById, findByEmail } from "./repositories/user.repository";
 import router from "./routers";

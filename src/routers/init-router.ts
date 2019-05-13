@@ -1,8 +1,9 @@
 import Router from "koa-router";
-import IRouter from "./IRouter";
-import { REST_STATUS } from "../constants";
-import RestError from "../RestError";
 import { inspect } from "util";
+
+import IRouter from "./IRouter";
+import { REST_STATUS } from "../constants/rest.constants";
+import RestError from "../errors/RestError";
 
 export default function initRouter(prefix: string, routes: IRouter[]): Router {
 	const router = new Router({ prefix });
