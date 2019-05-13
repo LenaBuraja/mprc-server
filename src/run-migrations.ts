@@ -1,6 +1,8 @@
 import { Transaction } from "knex";
 import knex from "./knex";
 import models = require("./models");
+import { giveAccess } from "./services/user.service";
+import { initialUser } from "config";
 
 const migrations: { name: string, exec: (tx: Transaction) => Promise<void> }[] = [{
 	name: 'initial',
@@ -52,26 +54,27 @@ const migrations: { name: string, exec: (tx: Transaction) => Promise<void> }[] =
 		]);
 	}
 }, {
-	name: 'grand access to admin',
+	name: 'create admin and give him access',
 	exec: async (tx) => {
 		const positionId: number = await tx(models.TABLE.POSITIONS)
-			.insert({ [models.POSITION.TITLE]: 'System Administrator' } as models.Position)
+			.insert({ [models.POSITION.TITLE]: initialUser.position } as models.Position)
 			.returning(models.POSITION.ID)
 			.then((res) => res[0]);
 		const personId: number = await tx(models.TABLE.PEOPLE).insert({
-			[models.PERSON.FIRST_NAME]: 'Admin',
-			[models.PERSON.LAST_NAME]: 'Adminovich',
-			[models.PERSON.EMAIL]: 'admin@mycompany.com',
+			[models.PERSON.FIRST_NAME]: initialUser.firstName,
+			[models.PERSON.LAST_NAME]: initialUser.lastName,
+			[models.PERSON.EMAIL]: initialUser.email,
 			[models.PERSON.POSITION]: positionId,
 		} as models.Person).returning(models.PERSON.ID).then((res) => res[0]);
 		const employeeId: number = await tx(models.TABLE.EMPLOYEES).insert({
 			[models.EMPLOYEE.PERSON]: personId,
 			[models.EMPLOYEE.EMPLOYMENT_DATE]: new Date(),
-			[models.EMPLOYEE.WAGE]: 800,
+			[models.EMPLOYEE.WAGE]: 0,
 		} as models.Employee).returning(models.EMPLOYEE.ID).then((res) => res[0]);
-		await tx(models.TABLE.USERS).insert({
+		const userId: number = await tx(models.TABLE.USERS).insert({
 			[models.USER.EMPLOYEE]: employeeId,
-		} as models.User);
+		} as models.User).returning(models.USER.ID).then((res) => res[0]);
+		await giveAccess(userId, tx);
 	},
 }];
 
@@ -82,16 +85,7 @@ export default async function runMigrations() {
 		if (appliedMigrations.has(name)) continue;
 		console.log(`Running migration "${name}"...`);
 		await knex.transaction(async (tx) => {
-			await exec(tx); tx.schema.createTable(models.TABLE.PEOPLE, (table) => {
-				table.increments(models.PERSON.ID).primary();
-				table.string(models.PERSON.FIRST_NAME).notNullable();
-				table.string(models.PERSON.LAST_NAME).notNullable();
-				table.string(models.PERSON.MIDDLE_NAME);
-				table.date(models.PERSON.BIRTHDAY);
-				table.string(models.PERSON.EMAIL);
-				table.string(models.PERSON.PHONE_NUMBER);
-				table.integer(models.PERSON.POSITION).references(models.POSITION.ID).inTable(models.TABLE.POSITIONS);
-			})
+			await exec(tx);
 			await tx(models.TABLE.MIGRATIONS).insert({
 				[models.MIGRATION.NAME]: name,
 				[models.MIGRATION.APPLIED_AT]: new Date(),
@@ -111,5 +105,5 @@ async function getAppliedMigrations(): Promise<Set<string>> {
 		});
 	}
 	return await knex.select(models.MIGRATION.NAME).from(models.TABLE.MIGRATIONS)
-		.then((res) => new Set(res.map(({ name }) => name)));
+		.then((res: models.Migration[]) => new Set(res.map(({ name }) => name)));
 }

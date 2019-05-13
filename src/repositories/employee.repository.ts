@@ -2,9 +2,15 @@
 
 import { Employee, Person, EMPLOYEE, TABLE, PERSON } from "../models";
 import knex from "../knex";
+import { Transaction } from "knex";
 
-export async function findById(id: number): Promise<Employee> {
-	return await knex.select().from(TABLE.EMPLOYEES).where({ [EMPLOYEE.ID]: id }).limit(1).then((res) => res[0]);
+export async function findById(id: number, tx?: Transaction): Promise<Employee> {
+	return await (tx || knex)
+		.select()
+		.from(TABLE.EMPLOYEES)
+		.where({ [EMPLOYEE.ID]: id })
+		.limit(1)
+		.then((res) => res[0]);
 }
 
 export interface EmployeeExpandSettings {
@@ -15,9 +21,9 @@ export interface ExpandedEmployee extends Omit<Employee, EMPLOYEE.PERSON> {
 	[EMPLOYEE.PERSON]: Person | Employee[EMPLOYEE.PERSON];
 }
 
-export async function expand(employee: Employee, settings: EmployeeExpandSettings) {
+export async function expand(employee: Employee, settings: EmployeeExpandSettings, tx?: Transaction) {
 	if (settings.person) {
-		employee[EMPLOYEE.PERSON] = await knex.select()
+		employee[EMPLOYEE.PERSON] = await (tx || knex).select()
 			.from(TABLE.PEOPLE)
 			.where({ [PERSON.ID]: employee[EMPLOYEE.PERSON] })
 			.limit(1)

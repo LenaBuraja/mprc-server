@@ -5,5 +5,16 @@
 		"database": "",
 		"password": "",
 		"port": 0
+	},
+	"initialUser": {
+		"firstName": "",
+		"lastName": "",
+		"email": "",
+		"position": ""
+	},
+	"mailer": {
+		"service": "",
+		"user": "",
+		"pass": ""
 	}
 }

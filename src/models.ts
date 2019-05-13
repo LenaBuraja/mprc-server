@@ -37,6 +37,12 @@ export enum MIGRATION {
 	APPLIED_AT = 'applied_at',
 }
 
+export type Migration = { [key in MIGRATION]: {
+	[MIGRATION.ID]: number;
+	[MIGRATION.NAME]: string;
+	[MIGRATION.APPLIED_AT]: Date;
+}[key] };
+
 export enum POSITION {
 	ID = 'id',
 	TITLE = 'title',

@@ -6,13 +6,14 @@ import { PASSWORD_TOKEN_LENGTH } from "../constants/user.constants";
 import RestError from "../errors/RestError";
 import knex from "../knex";
 import { TABLE, User, USER, EMPLOYEE, PERSON, Employee } from "../models";
+import { Transaction } from "knex";
 
-export async function findById(id: number): Promise<User | null> {
-	return await knex.select().from(TABLE.USERS).where({ id }).limit(1).then((res) => res[0] || null);
+export async function findById(id: number, tx?: Transaction): Promise<User | null> {
+	return await (tx || knex).select().from(TABLE.USERS).where({ id }).limit(1).then((res) => res[0] || null);
 }
 
-export async function findByEmail(email: string): Promise<User | null> {
-	return await knex.select(`${TABLE.USERS}.*`)
+export async function findByEmail(email: string, tx?: Transaction): Promise<User | null> {
+	return await (tx || knex).select(`${TABLE.USERS}.*`)
 		.from(TABLE.PEOPLE)
 		.innerJoin(TABLE.EMPLOYEES, `${TABLE.PEOPLE}.${PERSON.ID}`, `${TABLE.EMPLOYEES}.${EMPLOYEE.PERSON}`)
 		.innerJoin(TABLE.USERS, `${TABLE.EMPLOYEES}.${EMPLOYEE.ID}`, `${TABLE.USERS}.${USER.EMPLOYEE}`)
@@ -21,9 +22,9 @@ export async function findByEmail(email: string): Promise<User | null> {
 		.then((res) => (res as any[])[0] || null);
 }
 
-export async function setPasswordToken(userId: number, passwordToken: Buffer) {
+export async function setPasswordToken(userId: number, passwordToken: Buffer, tx?: Transaction) {
 	if (passwordToken.length !== PASSWORD_TOKEN_LENGTH) throw new Error('invalid password token length');
-	const userExists = await knex(TABLE.USERS)
+	const userExists = await (tx || knex)(TABLE.USERS)
 		.where({ [USER.ID]: userId })
 		.update({ [USER.PASSWORD_TOKEN]: passwordToken.toString('hex') })
 		.limit(1)
@@ -40,12 +41,12 @@ interface ExpandedUser extends Omit<User, USER.EMPLOYEE> {
 	[USER.EMPLOYEE]: EmployeeRepository.ExpandedEmployee | User[USER.EMPLOYEE];
 }
 
-export async function expand(user: User, settings: UserExpandSettings): Promise<ExpandedUser> {
+export async function expand(user: User, settings: UserExpandSettings, tx?: Transaction): Promise<ExpandedUser> {
 	const result = user as ExpandedUser;
 	if (settings.employee) {
-		result[USER.EMPLOYEE] = await EmployeeRepository.findById(user.employee);
+		result[USER.EMPLOYEE] = await EmployeeRepository.findById(user.employee, tx);
 		if (typeof settings.employee !== 'boolean') {
-			await EmployeeRepository.expand(result.employee as Employee, settings.employee);
+			await EmployeeRepository.expand(result.employee as Employee, settings.employee, tx);
 		}
 	}
 	return result;

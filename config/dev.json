@@ -5,5 +5,16 @@
 		"database": "mprc_dev",
 		"password": "1234",
 		"port": 5432
+	},
+	"initialUser": {
+		"firstName": "Admin",
+		"lastName": "Adminovich",
+		"email": "admin@mycompany.com",
+		"position": "System Administrator"
+	},
+	"mailer": {
+		"service": "gmail",
+		"user": "mprc.service@mycompany.com",
+		"pass": "1234"
 	}
 }
