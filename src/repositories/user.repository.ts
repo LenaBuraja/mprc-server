@@ -13,7 +13,7 @@ export async function findById(id: number, tx?: Transaction): Promise<User | nul
 }
 
 export async function findByEmail(email: string, tx?: Transaction): Promise<User | null> {
-	return await (tx || knex).select(`${TABLE.USERS}.*`)
+	return await (tx || knex).select([`${TABLE.USERS}.*`])
 		.from(TABLE.PEOPLE)
 		.innerJoin(TABLE.EMPLOYEES, `${TABLE.PEOPLE}.${PERSON.ID}`, `${TABLE.EMPLOYEES}.${EMPLOYEE.PERSON}`)
 		.innerJoin(TABLE.USERS, `${TABLE.EMPLOYEES}.${EMPLOYEE.ID}`, `${TABLE.USERS}.${USER.EMPLOYEE}`)

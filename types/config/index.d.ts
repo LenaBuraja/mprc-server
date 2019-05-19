@@ -21,4 +21,6 @@ declare module "config" {
 		pass: string,
 	};
 
+	export const setPasswordPagePath: string;
+
 }

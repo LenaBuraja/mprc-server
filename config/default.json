@@ -16,5 +16,6 @@
 		"service": "",
 		"user": "",
 		"pass": ""
-	}
+	},
+	"setPasswordPagePath": ""
 }

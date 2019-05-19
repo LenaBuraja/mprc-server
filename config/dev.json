@@ -9,12 +9,13 @@
 	"initialUser": {
 		"firstName": "Admin",
 		"lastName": "Adminovich",
-		"email": "admin@mycompany.com",
+		"email": "lenaburaya.mprc.init@gmail.com",
 		"position": "System Administrator"
 	},
 	"mailer": {
 		"service": "gmail",
-		"user": "mprc.service@mycompany.com",
+		"user": "lenaburaya.mprc@gmail.com",
 		"pass": "1234"
-	}
+	},
+	"setPasswordPagePath": "http://127.0.0.1:8080/#/sign-up"
 }

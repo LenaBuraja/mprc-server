@@ -6,6 +6,7 @@ import { ExpandedEmployee } from "../repositories/employee.repository";
 import { findById, expand, setPasswordToken } from "../repositories/user.repository";
 import { Transaction } from "knex";
 import { sendMail, MAIL } from "./mailer.service";
+import { setPasswordPagePath } from "config";
 
 export async function giveAccess(userId: number, tx?: Transaction): Promise<{ email: string, passwordToken: Buffer }> {
 	const user = await findById(userId, tx);
@@ -17,7 +18,7 @@ export async function giveAccess(userId: number, tx?: Transaction): Promise<{ em
 	if (!email) throw new Error(USER_ERROR.HAS_NOT_EMAIL);
 	const passwordToken = randomBytes(PASSWORD_TOKEN_LENGTH);
 	await setPasswordToken(userId, passwordToken, tx);
-	const tokenUrl = `http://127.0.0.1:3030/auth/set-password?token=${passwordToken}`;
+	const tokenUrl = `${setPasswordPagePath}?token=${passwordToken.toString('hex')}`;
 	await sendMail(MAIL.GOT_ACCESS, email, { name: email, token_url: tokenUrl });
 	return { email, passwordToken };
 }
