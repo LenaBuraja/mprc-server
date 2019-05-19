@@ -49,7 +49,7 @@ const migrations: { name: string, exec: (tx: Transaction) => Promise<void> }[] =
 				table.increments(models.USER.ID).primary();
 				table.integer(models.USER.EMPLOYEE).references(models.EMPLOYEE.ID).inTable(models.TABLE.EMPLOYEES);
 				table.text(models.USER.PASSWORD_HASH);
-				table.text(models.USER.PASSWORD_TOKEN);
+				table.text(models.USER.PASSWORD_TOKEN_HASH);
 			})),
 		]);
 	}

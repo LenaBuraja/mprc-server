@@ -22,11 +22,11 @@ export async function findByEmail(email: string, tx?: Transaction): Promise<User
 		.then((res) => (res as any[])[0] || null);
 }
 
-export async function setPasswordToken(userId: number, passwordToken: Buffer, tx?: Transaction) {
-	if (passwordToken.length !== PASSWORD_TOKEN_LENGTH) throw new Error('invalid password token length');
+export async function setPasswordTokenHash(userId: number, passwordTokenHash: Buffer, tx?: Transaction) {
+	if (passwordTokenHash.length !== PASSWORD_TOKEN_LENGTH) throw new Error('invalid password token hash length');
 	const userExists = await (tx || knex)(TABLE.USERS)
 		.where({ [USER.ID]: userId })
-		.update({ [USER.PASSWORD_TOKEN]: passwordToken.toString('hex') })
+		.update({ [USER.PASSWORD_TOKEN_HASH]: passwordTokenHash.toString('hex') })
 		.limit(1)
 		.returning(USER.ID)
 		.then((res) => res.length === 1);

@@ -1,3 +1,4 @@
+import keccak256 = require("keccak256");
 import Koa, { ParameterizedContext } from "koa";
 import bodyParser from "koa-bodyparser";
 import session from "koa-session";
@@ -27,11 +28,9 @@ export async function init() {
 }
 
 const validateAuthCreds: VerifyFunction = async (email: string, password: string, done) => {
-	console.log(email, password);
 	const user = await findByEmail(email);
-	console.log(user);
 	// TODO: use password hash
-	if (!user || user[USER.PASSWORD_HASH] !== password) done(null, false);
+	if (!user || user[USER.PASSWORD_HASH] !== keccak256(password).toString('hex')) done(null, false);
 	else done(null, user);
 };
 

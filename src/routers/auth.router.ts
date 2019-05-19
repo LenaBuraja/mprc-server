@@ -5,8 +5,16 @@ import koaPassport = require("koa-passport");
 import { promisify } from "util";
 import { User } from "../models";
 import RestError from "../errors/RestError";
+import { setPasswordForm } from "../forms/auth.forms";
+import { setPasswordController } from "../controllers/auth.controller";
 
 export = initRouter('/auth', [{
+	method: METHOD.POST,
+	path: '/set-password',
+	reqParser: (ctx) => ctx.request.body,
+	joi: setPasswordForm,
+	handler: setPasswordController,
+}, {
 	method: METHOD.POST,
 	path: '/sign-in',
 	handler: async ({ ctx }) => {

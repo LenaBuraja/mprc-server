@@ -103,12 +103,12 @@ export enum USER {
 	ID = 'id',
 	EMPLOYEE = 'employee',
 	PASSWORD_HASH = 'password_hash',
-	PASSWORD_TOKEN = 'password_token',
+	PASSWORD_TOKEN_HASH = 'password_token_hash',
 }
 
 export type User = { [key in USER]: {
 	[USER.ID]: number;
 	[USER.EMPLOYEE]: number;
 	[USER.PASSWORD_HASH]: string | null;
-	[USER.PASSWORD_TOKEN]: string | null;
+	[USER.PASSWORD_TOKEN_HASH]: string | null;
 }[key] };
