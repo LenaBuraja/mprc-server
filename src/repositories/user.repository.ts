@@ -41,7 +41,15 @@ interface ExpandedUser extends Omit<User, USER.EMPLOYEE> {
 	[USER.EMPLOYEE]: EmployeeRepository.ExpandedEmployee | User[USER.EMPLOYEE];
 }
 
-export async function expand(user: User, settings: UserExpandSettings, tx?: Transaction): Promise<ExpandedUser> {
+export const DEFAULT_EXPAND_SETTINGS: UserExpandSettings = {
+	employee: { person: true },
+};
+
+export async function expand(
+	user: User,
+	settings: UserExpandSettings = DEFAULT_EXPAND_SETTINGS,
+	tx?: Transaction,
+): Promise<ExpandedUser> {
 	const result = user as ExpandedUser;
 	if (settings.employee) {
 		result[USER.EMPLOYEE] = await EmployeeRepository.findById(user.employee, tx);

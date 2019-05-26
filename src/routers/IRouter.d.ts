@@ -17,6 +17,7 @@ type IRouter = {
 	method: METHOD;
 	path: string;
 	reqParser?: (ctx: ParameterizedContext) => AnyForm;
+	onlyAuthorized?: boolean;
 	joi?: ObjectSchema;
 	handler: IController;
 };

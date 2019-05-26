@@ -7,12 +7,13 @@ import RestError from "../errors/RestError";
 
 export default function initRouter(prefix: string, routes: IRouter[]): Router {
 	const router = new Router({ prefix });
-	for (const { method, path, handler, reqParser, joi } of routes) {
+	for (const { method, path, handler, reqParser, joi, onlyAuthorized } of routes) {
 		router[method](path, async (ctx) => {
 			try {
 				const reqParams = reqParser ? reqParser(ctx) : {};
 				const { error, value: form } = joi ? joi.validate(reqParams) : { error: null, value: {} };
 				if (error) throw new RestError(error.message, REST_STATUS.BAD_REQUEST);
+				if (onlyAuthorized && !ctx.state.user) throw new RestError('unauthorized', REST_STATUS.UNAUTHORIZED);
 				const result = await handler({ ctx, user: ctx.state.user || null, form });
 				ctx.status = REST_STATUS.OK;
 				ctx.body = { status: ctx.status, result };
