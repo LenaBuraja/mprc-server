@@ -9,7 +9,7 @@ const migrations: { name: string, exec: (tx: Transaction) => Promise<void> }[] =
 	exec: async (tx) => {
 		await tx.schema.createTable(models.TABLE.POSITIONS, (table) => {
 			table.increments(models.POSITION.ID).primary();
-			table.string(models.POSITION.TITLE).notNullable();
+			table.string(models.POSITION.TITLE).notNullable().unique();
 		});
 		await tx.schema.createTable(models.TABLE.PEOPLE, (table) => {
 			table.increments(models.PERSON.ID).primary();
@@ -23,7 +23,7 @@ const migrations: { name: string, exec: (tx: Transaction) => Promise<void> }[] =
 		});
 		await tx.schema.createTable(models.TABLE.EMPLOYEES, (table) => {
 			table.increments(models.EMPLOYEE.ID).primary();
-			table.integer(models.EMPLOYEE.PERSON).references(models.PERSON.ID).inTable(models.TABLE.PEOPLE);
+			table.integer(models.EMPLOYEE.PERSON).references(models.PERSON.ID).inTable(models.TABLE.PEOPLE).unique();
 			table.date(models.EMPLOYEE.EMPLOYMENT_DATE).notNullable();
 			table.integer(models.EMPLOYEE.WAGE).notNullable();
 		});
