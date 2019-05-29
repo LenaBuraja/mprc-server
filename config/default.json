@@ -1,21 +1,21 @@
 {
 	"pg": {
-		"user": "",
-		"host": "",
-		"database": "",
-		"password": "",
-		"port": 0
+		"user": "mprc_user",
+		"host": "127.0.0.1",
+		"database": "mprc",
+		"password": "1234",
+		"port": 5432
 	},
 	"initialUser": {
-		"firstName": "",
-		"lastName": "",
-		"email": "",
-		"position": ""
+		"firstName": "Admin",
+		"lastName": "Adminovich",
+		"email": "lenaburaya.mprc.init@gmail.com",
+		"position": "System Administrator"
 	},
 	"mailer": {
-		"service": "",
-		"user": "",
-		"pass": ""
+		"service": "gmail",
+		"user": "lenaburaya.mprc@gmail.com",
+		"pass": "1234"
 	},
-	"setPasswordPagePath": ""
+	"setPasswordPagePath": "http://127.0.0.1:8080/#/sign-up"
 }

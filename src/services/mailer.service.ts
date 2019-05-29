@@ -1,12 +1,7 @@
 import { mailer } from "config";
 import { readFile } from "fs-extra";
 import { compile, TemplateDelegate } from "handlebars";
-import { createTransport } from "nodemailer";
-
-const transporter = createTransport({
-	service: mailer.service,
-	auth: { user: mailer.user, pass: mailer.pass },
-});
+import mailerConnection from "../connections/mailer.connection";
 
 export enum MAIL {
 	GOT_ACCESS = 'got-access',
@@ -32,7 +27,7 @@ export async function sendMail(mail: MAIL, to: string, context: MailParams[typeo
 		text: text(context),
 		html: html(context),
 	};
-	return await transporter.sendMail(mailParams);
+	return await mailerConnection.sendMail(mailParams);
 }
 
 const mails: { [key in MAIL]?: { text: TemplateDelegate, html: TemplateDelegate } } = {};

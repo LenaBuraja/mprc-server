@@ -1,6 +1,6 @@
 {
 	"pg": {
 		"user": "mprc_dev_user",
-		"database": "mprc_dev"
+		"database": "mprc_test"
 	}
 }

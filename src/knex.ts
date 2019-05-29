@@ -1,14 +1,15 @@
+import { pg } from "config";
 import connect from "knex";
 
 const knex = connect({
 	client: 'pg',
 	version: '10.7',
 	connection: {
-		host: '127.0.0.1',
-		port: 5432,
-		user: 'mprc_dev_user',
-		password: '1234',
-		database: 'mprc_dev',
+		host: pg.host,
+		port: pg.port,
+		user: pg.user,
+		password: pg.password,
+		database: pg.database,
 	},
 });
 

@@ -6,12 +6,16 @@
 	"scripts": {
 		"start": "ts-node ./src/index.ts",
 		"start:dev": "cross-env NODE_ENV=dev npm run start",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "cross-env NODE_ENV=test mocha --require ts-node/register ./test/index.test.ts --exit"
 	},
 	"author": "LenaBuraya",
 	"license": "MIT",
 	"devDependencies": {
+		"@types/mocha": "^5.2.6",
+		"@types/node-fetch": "^2.3.4",
 		"cross-env": "^5.2.0",
+		"mocha": "^6.1.4",
+		"node-fetch": "^2.6.0",
 		"ts-node": "^8.1.0",
 		"typescript": "^3.4.5"
 	},
