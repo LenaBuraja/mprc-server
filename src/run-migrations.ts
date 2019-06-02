@@ -19,11 +19,11 @@ const migrations: { name: string, exec: (tx: Transaction) => Promise<void> }[] =
 			table.date(models.PERSON.BIRTHDAY);
 			table.string(models.PERSON.EMAIL);
 			table.string(models.PERSON.PHONE_NUMBER);
-			table.integer(models.PERSON.POSITION).references(models.POSITION.ID).inTable(models.TABLE.POSITIONS);
 		});
 		await tx.schema.createTable(models.TABLE.EMPLOYEES, (table) => {
 			table.increments(models.EMPLOYEE.ID).primary();
-			table.integer(models.EMPLOYEE.PERSON).references(models.PERSON.ID).inTable(models.TABLE.PEOPLE).unique();
+			table.integer(models.EMPLOYEE.PERSON).references(models.PERSON.ID).inTable(models.TABLE.PEOPLE);
+			table.integer(models.EMPLOYEE.POSITION).references(models.POSITION.ID).inTable(models.TABLE.POSITIONS);
 			table.date(models.EMPLOYEE.EMPLOYMENT_DATE).notNullable();
 			table.integer(models.EMPLOYEE.WAGE).notNullable();
 		});
@@ -31,10 +31,13 @@ const migrations: { name: string, exec: (tx: Transaction) => Promise<void> }[] =
 			Promise.resolve().then(async () => await tx.schema.createTable(models.TABLE.CANDIDATES, (table) => {
 				table.increments(models.CANDIDATE.ID).primary();
 				table.integer(models.CANDIDATE.PERSON_ID).references(models.PERSON.ID).inTable(models.TABLE.PEOPLE);
-				table.integer(models.CANDIDATE.PERSONNEL_OFFICER)
+				table.integer(models.CANDIDATE.POSITION_ID)
+					.references(models.POSITION.ID)
+					.inTable(models.TABLE.POSITIONS);
+				table.integer(models.CANDIDATE.PERSONNEL_OFFICER_ID)
 					.references(models.EMPLOYEE.ID)
 					.inTable(models.TABLE.EMPLOYEES);
-				table.integer(models.CANDIDATE.INTERVIEWER)
+				table.integer(models.CANDIDATE.INTERVIEWER_ID)
 					.references(models.EMPLOYEE.ID)
 					.inTable(models.TABLE.EMPLOYEES);
 				table.timestamp(models.CANDIDATE.INTERVIEWED_AT);
@@ -56,20 +59,23 @@ const migrations: { name: string, exec: (tx: Transaction) => Promise<void> }[] =
 }, {
 	name: 'create admin and give him access',
 	exec: async (tx) => {
-		const positionId: number = await tx(models.TABLE.POSITIONS)
-			.insert({ [models.POSITION.TITLE]: initialUser.position } as models.Position)
-			.returning(models.POSITION.ID)
-			.then((res) => res[0]);
-		const personId: number = await tx(models.TABLE.PEOPLE).insert({
-			[models.PERSON.FIRST_NAME]: initialUser.firstName,
-			[models.PERSON.LAST_NAME]: initialUser.lastName,
-			[models.PERSON.EMAIL]: initialUser.email,
-			[models.PERSON.POSITION]: positionId,
-		} as models.Person).returning(models.PERSON.ID).then((res) => res[0]);
+		const [positionId, personId] = await Promise.all([
+			tx(models.TABLE.POSITIONS)
+				.insert({ [models.POSITION.TITLE]: initialUser.position } as models.Position)
+				.returning(models.POSITION.ID)
+				.then((res) => res[0]),
+			Promise.resolve()
+				.then(() => tx(models.TABLE.PEOPLE).insert({
+					[models.PERSON.FIRST_NAME]: initialUser.firstName,
+					[models.PERSON.LAST_NAME]: initialUser.lastName,
+					[models.PERSON.EMAIL]: initialUser.email
+				} as models.Person).returning(models.PERSON.ID).then((res) => res[0])),
+		]);
 		const employeeId: number = await tx(models.TABLE.EMPLOYEES).insert({
 			[models.EMPLOYEE.PERSON]: personId,
 			[models.EMPLOYEE.EMPLOYMENT_DATE]: new Date(),
 			[models.EMPLOYEE.WAGE]: 0,
+			[models.EMPLOYEE.POSITION]: positionId,
 		} as models.Employee).returning(models.EMPLOYEE.ID).then((res) => res[0]);
 		const userId: number = await tx(models.TABLE.USERS).insert({
 			[models.USER.EMPLOYEE]: employeeId,
