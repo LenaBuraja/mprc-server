@@ -1,6 +1,7 @@
 import keccak256 = require("keccak256");
 import Koa, { ParameterizedContext } from "koa";
 import bodyParser from "koa-bodyparser";
+import koaCors from "@koa/cors";
 import session from "koa-session";
 import passport from "koa-passport";
 import { Strategy as LocalStrategy, VerifyFunction } from "passport-local";
@@ -20,6 +21,9 @@ export async function init() {
 	passport.use(new LocalStrategy({ usernameField: 'email' }, validateAuthCreds));
 	app.use(passport.initialize());
 	app.use(passport.session());
+	app.use(koaCors({
+		credentials: true
+	}));
 	app.use(router.routes());
 	app.use(handleInvalidMethod);
 	const port = 3649;
