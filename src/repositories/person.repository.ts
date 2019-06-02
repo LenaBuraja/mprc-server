@@ -1,9 +1,9 @@
+import { CreatePersonForm } from "../forms/person.forms";
 import knex, { Transaction } from "../knex";
 import { Person, TABLE, PERSON } from "../models";
-import { CreatePersonForm } from "../forms/person.forms";
 
 export enum PERSON_REPOSITORY_ERROR {
-	NOT_FOUND = 'PERSON_NOT_FOUND',
+	NOT_FOUND = 'person.repository@not_found',
 };
 
 export async function findPersonById(id: number, tx: Transaction | typeof knex = knex): Promise<Person> {
