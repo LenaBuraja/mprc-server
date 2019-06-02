@@ -8,7 +8,7 @@ import { setPasswordController } from "../controllers/auth.controller";
 import RestError from "../errors/RestError";
 import { setPasswordForm } from "../forms/auth.forms";
 import { User } from "../models";
-import { expand } from "../repositories/user.repository";
+import { expandUser } from "../services/expand.service";
 
 const router: Router = initRouter('/auth', [{
 	method: METHOD.POST,
@@ -25,13 +25,13 @@ const router: Router = initRouter('/auth', [{
 		})() as User | false;
 		if (user === false) throw new RestError('invalid email or password', REST_STATUS.UNPROCESSABLE_ENTITY);
 		ctx.login(user);
-		return expand(user);
+		return expandUser(user);
 	},
 }, {
 	method: METHOD.GET,
 	path: '/me',
 	onlyAuthorized: true,
-	handler: ({ user }) => expand(user!),
+	handler: ({ user }) => expandUser(user!),
 }, {
 	method: METHOD.POST,
 	path: '/sign-out',

@@ -1,7 +1,7 @@
 import { IController } from "../routers/IRouter";
 import { CreateEmployeeForm } from "../forms/employee.forms";
 import knex from "../knex";
-import { User, TABLE, PERSON, Position, USER, Person, EMPLOYEE, POSITION } from "../models";
+import { TABLE, PERSON, Person, EMPLOYEE, POSITION } from "../models";
 import RestError from "../errors/RestError";
 import { REST_STATUS } from "../constants/rest.constants";
 import { getOrCreatePosition } from "../repositories/position.repository";

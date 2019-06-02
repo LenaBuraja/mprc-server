@@ -4,6 +4,7 @@
 	"description": "MPRC backend server",
 	"main": "index.js",
 	"scripts": {
+		"build": "tsc",
 		"start": "ts-node ./src/index.ts",
 		"start:dev": "cross-env NODE_ENV=dev npm run start",
 		"test": "cross-env NODE_ENV=test mocha --require ts-node/register ./test/index.test.ts --exit"

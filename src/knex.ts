@@ -14,3 +14,4 @@ const knex = connect({
 });
 
 export default knex;
+export { Transaction } from "knex";

@@ -8,7 +8,6 @@
 		"declarationMap": false,
 		"sourceMap": false,
 		"outDir": "./dist",
-		"rootDir": "./src",
 		"removeComments": true,
 		"strict": true,
 		"noImplicitAny": true,
@@ -25,6 +24,8 @@
 		"typeRoots": [
 			"types",
 			"node_modules/@types"
-		]
-	}
+		],
+	},
+	"exclude": ["test"],
+	"include": ["src"]
 }
