@@ -8,7 +8,7 @@ import { setPasswordController } from "../controllers/auth.controller";
 import RestError from "../errors/RestError";
 import { setPasswordForm } from "../forms/auth.forms";
 import { User } from "../models";
-import { expandUser } from "../services/expand.service";
+import expandUser from "../expand/user.expand";
 
 const router: Router = initRouter('/auth', [{
 	method: METHOD.POST,

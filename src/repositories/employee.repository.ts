@@ -1,7 +1,7 @@
 import knex, { Transaction } from "../knex";
 import { Employee, EMPLOYEE, TABLE } from "../models";
 
-export async function findById(id: number, tx: Transaction | typeof knex = knex): Promise<Employee> {
+export async function findEmployeeById(id: number, tx: Transaction | typeof knex = knex): Promise<Employee> {
 	return await tx(TABLE.EMPLOYEES).select().where({ [EMPLOYEE.ID]: id }).limit(1).then((res) => res[0]);
 }
 

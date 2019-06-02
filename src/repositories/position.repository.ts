@@ -12,3 +12,10 @@ export async function getOrCreatePosition(title: string, tx?: Transaction): Prom
 export async function getAllPositions(tx: Transaction | typeof knex = knex): Promise<Position[]> {
 	return await tx(TABLE.POSITIONS).select().orderBy(POSITION.ID);
 }
+
+export async function findPositionById(id: number, tx: Transaction | typeof knex = knex): Promise<Position> {
+	const result: Position | undefined = await tx(TABLE.POSITIONS).select().where({ [POSITION.ID]: id }).limit(1)
+		.then((res) => res[0]);
+	if (!result) throw new Error('POSITION NOT FOUND');
+	return result;
+}
