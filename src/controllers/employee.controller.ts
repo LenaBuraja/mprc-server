@@ -1,38 +1,26 @@
-import { IController } from "../routers/IRouter";
+import { REST_STATUS } from "../constants/rest.constants";
+import RestError from "../errors/RestError";
+import expandEmployee from "../expand/employee.expand";
 import { CreateEmployeeForm } from "../forms/employee.forms";
 import knex from "../knex";
-import { TABLE, PERSON, Person, EMPLOYEE, POSITION } from "../models";
-import RestError from "../errors/RestError";
-import { REST_STATUS } from "../constants/rest.constants";
-import { getOrCreatePosition } from "../repositories/position.repository";
+import { PERSON_REPOSITORY_ERROR } from "../repositories/person.repository";
+import { IController } from "../routers/IRouter";
+import { createEmployee, EMPLOYEE_SERVICE_ERROR } from "../services/employee.service";
 
-export const createEmployeeController: IController<CreateEmployeeForm> = async ({ ctx, form }) => {
-	return await knex.transaction(async (client) => {
-		let person: Person;
-		if (typeof form.person === 'number') {
-			[person] = await client.select('*').from(TABLE.PEOPLE).where({ [PERSON.ID]: form.person }).limit(1);
-			if (!person) throw new RestError('person not found', REST_STATUS.NOT_FOUND);
-		} else {
-			[person] = await client(TABLE.PEOPLE).insert({
-				[PERSON.FIRST_NAME]: form.person.firstName,
-				[PERSON.LAST_NAME]: form.person.lastName,
-				[PERSON.MIDDLE_NAME]: form.person.middleName,
-				[PERSON.BIRTHDAY]: form.person.birthday,
-				[PERSON.EMAIL]: form.person.email,
-				[PERSON.PHONE_NUMBER]: form.person.phoneNumber,
-				[PERSON.POSITION]: await getOrCreatePosition(form.person.position, client)
-					.then((res) => res[POSITION.ID]),
-			}).returning('*');
+export const createEmployeeController: IController<CreateEmployeeForm> = async ({ form }) => {
+	try {
+		return await knex.transaction(async (tx) => {
+			const employee = await createEmployee(form, tx);
+			return expandEmployee(employee, { tx });
+		});
+	} catch (error) {
+		switch (error.message) {
+			case PERSON_REPOSITORY_ERROR.NOT_FOUND:
+				throw new RestError('person not found', REST_STATUS.NOT_FOUND);
+			case EMPLOYEE_SERVICE_ERROR.ALREADY_EXISTS:
+				throw new RestError('employee already exists', REST_STATUS.UNPROCESSABLE_ENTITY);
+			default:
+				throw error;
 		}
-		const [existingEmployee] = await client.from(TABLE.EMPLOYEES)
-			.select('*')
-			.where({ [EMPLOYEE.PERSON]: person[PERSON.ID] })
-			.limit(1);
-		if (existingEmployee) throw new RestError('employee already exists', REST_STATUS.UNPROCESSABLE_ENTITY);
-		return await client.into(TABLE.EMPLOYEES).insert({
-			[EMPLOYEE.PERSON]: person[PERSON.ID],
-			[EMPLOYEE.EMPLOYMENT_DATE]: form.employmentDate,
-			[EMPLOYEE.WAGE]: form.wage,
-		}).returning('*').then((res) => res[0]);
-	});
+	}
 }
