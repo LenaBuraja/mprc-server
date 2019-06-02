@@ -17,3 +17,11 @@ export interface CreatePersonForm {
 	email: string | null;
 	phoneNumber: string | null;
 };
+
+export const getPeopleForm = Joi.object({
+	isEmployee: Joi.bool().default(null),
+});
+
+export interface GetPeopleForm {
+	isEmployee: boolean | null;
+}

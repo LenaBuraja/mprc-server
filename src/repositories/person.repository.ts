@@ -1,4 +1,4 @@
-import { CreatePersonForm } from "../forms/person.forms";
+import { CreatePersonForm, GetPeopleForm } from "../forms/person.forms";
 import knex, { Transaction } from "../knex";
 import { Person, TABLE, PERSON } from "../models";
 
