@@ -41,7 +41,7 @@
 		"handlebars": "^4.1.2",
 		"joi": "^14.3.1",
 		"keccak256": "^1.0.0",
-		"knex": "0.16.5",
+		"knex": "0.20.1",
 		"koa": "^2.7.0",
 		"koa-bodyparser": "^4.2.1",
 		"koa-passport": "^4.1.3",
